@@ -149,6 +149,16 @@ func (cc *LBClient) get() *lbClient {
 	return minC
 }
 
+func (cc *LBClient) PendingRequests() []int {
+	cc.mu.RLock()
+	clients := make([]int, len(cc.cs))
+	for i := range cc.cs {
+		clients[i] = cc.cs[i].PendingRequests()
+	}
+	cc.mu.RUnlock()
+	return clients
+}
+
 type lbClient struct {
 	c           BalancingClient
 	healthCheck func(req *Request, resp *Response, err error) bool
